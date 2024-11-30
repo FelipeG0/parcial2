@@ -1,5 +1,5 @@
-import { Bono } from "src/bonos/entities/bono.entity";
-import { Usuario } from "src/usuarios/entities/usuario.entity";
+import { Bono } from '../../bonos/entities/bono.entity';
+import { Usuario } from '../../usuarios/entities/usuario.entity';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()

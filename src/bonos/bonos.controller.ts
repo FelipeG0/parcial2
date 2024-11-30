@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { BonosService } from './bonos.service';
 import { CreateBonoDto } from './dto/create-bono.dto';
-import { UpdateBonoDto } from './dto/update-bono.dto';
+import { BusinessError, BusinessLogicException } from 'src/shared/errors/business-errors';
 
 @Controller('bonos')
 export class BonosController {
@@ -12,23 +12,33 @@ export class BonosController {
     return this.bonosService.create(createBonoDto);
   }
 
-  @Get()
-  findAll() {
-    return this.bonosService.findAll();
+  @Get('codigo/:codigo')
+  async findBonoByCodigo(@Param('codigo') codigo: string) {
+
+    const bono = await this.bonosService.findBonoByCodigo(codigo);
+    if (!bono) {
+      throw new BusinessLogicException('no se encontro un bono asociado a ese codigo', BusinessError.NOT_FOUND);
+    }
+    return bono;
+
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.bonosService.findOne(+id);
-  }
+  @Get('usuario/:usuarioId')
+  async findAllBonosByUsuario(@Param('usuarioId') usuarioId: number) {
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBonoDto: UpdateBonoDto) {
-    return this.bonosService.update(+id, updateBonoDto);
+    const bonos = await this.bonosService.findAllBonosByUsuario(usuarioId);
+    if (!bonos.length) {
+      throw new BusinessLogicException("el usuario no tiene bonos", BusinessError.NOT_FOUND);
+    }
+    return bonos;
+
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.bonosService.remove(+id);
+  async deleteBono(@Param('id') id: number) {
+
+    await this.bonosService.deleteBono(id);
+    return { message: "Bono eliminado" };
+
   }
 }

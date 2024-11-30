@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CreateClaseDto } from './dto/create-clase.dto';
-import { UpdateClaseDto } from './dto/update-clase.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Clase } from './entities/clase.entity';
-
+import { BusinessError, BusinessLogicException } from '../shared/errors/business-errors';
 @Injectable()
 export class ClasesService {
 
@@ -20,19 +19,11 @@ export class ClasesService {
     return await this.claseRepository.save(clase);
   }
 
-  findAll() {
-    return `This action returns all clases`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} clase`;
-  }
-
-  update(id: number, updateClaseDto: UpdateClaseDto) {
-    return `This action updates a #${id} clase`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} clase`;
+  async findById(id: number): Promise<Clase> {
+    const clase: Clase = await this.claseRepository.findOne({where: {id},relations : ["bonos", "usuario"]} );
+       if (!clase)
+         throw new BusinessLogicException("The class with the given id was not found", BusinessError.NOT_FOUND);
+  
+       return clase;
   }
 }

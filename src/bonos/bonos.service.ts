@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBonoDto } from './dto/create-bono.dto';
-import { UpdateBonoDto } from './dto/update-bono.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Bono } from './entities/bono.entity';
 import { Repository } from 'typeorm';
-import { Usuario } from 'src/usuarios/entities/usuario.entity';
-import { Clase } from 'src/clases/entities/clase.entity';
-import { BusinessError, BusinessLogicException } from 'src/shared/BusinessLogicException';
+import { Clase } from '../clases/entities/clase.entity';
+import { BusinessError, BusinessLogicException } from '../shared/errors/business-errors';
 
 @Injectable()
 export class BonosService {
@@ -15,9 +13,6 @@ export class BonosService {
 
     @InjectRepository(Bono)
     private readonly bonoRepository : Repository<Bono>,
-
-    @InjectRepository(Usuario)
-    private usuarioRepository: Repository<Usuario>,
 
     @InjectRepository(Clase)
     private claseRepository: Repository<Clase>,
@@ -28,6 +23,16 @@ export class BonosService {
     return await this.bonoRepository.save(bono);
   
   }
+
+  async findBonoByCodigoDeLaClase(codigo: string) {
+    const clase = await this.claseRepository.findOneBy({ codigo });
+    if (!clase) {
+      throw new BusinessLogicException("clase no encontrado.", BusinessError.NOT_FOUND);
+    }
+
+    return this.bonoRepository.findOne({ where: { clase },});
+  }
+
   async findAllBonosByUsuario(usuarioId: number) {
     return this.bonoRepository.find({ where: { usuario: { id: usuarioId } } });
   }
@@ -39,20 +44,9 @@ export class BonosService {
     }
 
     if (bono.calificacion > 4) {
-      throw new BusinessLogicException("No se puede eliminar un bono con calificación mayor a 4.", BusinessError.NOT_FOUND);
+      throw new BusinessLogicException("No se puede eliminar un bono con calificación mayor a 4.", BusinessError.PRECONDITION_FAILED);
     }
 
     return this.bonoRepository.delete(id);
-  }
-
-  async findBonoByCodigo(codigo: string) {
-    const clase = await this.claseRepository.findOneBy({ codigo });
-    if (!clase) {
-      throw new BusinessLogicException("clase no encontrado.", BusinessError.NOT_FOUND);
-    }
-
-    return this.bonoRepository.findOne({
-      where: { clase },
-    });
   }
 }

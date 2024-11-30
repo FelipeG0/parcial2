@@ -1,6 +1,6 @@
-import { Bono } from "src/bonos/entities/bono.entity";
-import { Clase } from "src/clases/entities/clase.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Bono } from '../../bonos/entities/bono.entity';
+import { Clase } from '../../clases/entities/clase.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 
 @Entity()
 export class Usuario {
@@ -23,9 +23,10 @@ export class Usuario {
     @Column()
     rol : string 
 
-    @Column()
-    jefe : Usuario
-
+    @ManyToOne(() => Usuario)
+    @JoinColumn({ name: 'jefe_id' })
+    jefe: Usuario;    
+    
     @OneToMany(() => Bono, (bono) => bono.usuario)
     bonos : Bono[]
 
