@@ -12,16 +12,15 @@ export class BonosController {
 
   @Post()
   async create(@Body() createBonoDto: CreateBonoDto) {
-    const bono: Bono = plainToInstance(Bono, createBonoDto);
-    return await this.bonosService.create(bono);
+    return await this.bonosService.crearBono(createBonoDto);
   }
 
-  @Get('clase/:claseId')
-  async findByClassCode(@Param('claseId') claseId: number) {
-    return await this.bonosService.findBonoByCodigoDeLaClase(claseId);
+  @Get('clase/:codigoClase')
+  async findByClassCode(@Param('codigoClase') codigoClase: string) {
+    return await this.bonosService.findBonoByCodigoDeLaClase(codigoClase);
   }
 
-  @Get('usuarios/:usuarioId')
+  @Get('usuario/:usuarioId')
   async findAllByUser(@Param('usuarioId') userId: number) {
     return await this.bonosService.findAllBonosByUsuario(userId);
   }
@@ -33,7 +32,7 @@ export class BonosController {
 
   @Delete(':bonoId')
   @HttpCode(204)
-  async delete(@Param('bonoID') bonusId: number) {
+  async delete(@Param('bonoId') bonusId: number) {
     return await this.bonosService.deleteBono(bonusId);
   }
 }

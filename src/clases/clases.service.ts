@@ -15,8 +15,13 @@ export class ClasesService {
 
   ){}
   async create(claseDto: CreateClaseDto) {
-    const clase = this.claseRepository.create(claseDto)
-    return await this.claseRepository.save(clase);
+
+        if (claseDto.codigo.length !== 10) {
+            throw new BusinessLogicException('El código de la clase debe tener 10 caracteres', BusinessError.PRECONDITION_FAILED);
+        }
+
+        const clase = this.claseRepository.create(claseDto);
+        return this.claseRepository.save(clase);
   }
 
   async findById(id: number): Promise<Clase> {

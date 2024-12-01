@@ -1,8 +1,9 @@
 import { Bono } from '../../bonos/entities/bono.entity';
 import { Usuario } from '../../usuarios/entities/usuario.entity';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity()
+@Unique(["codigo"])
 export class Clase {
 
     @PrimaryGeneratedColumn()

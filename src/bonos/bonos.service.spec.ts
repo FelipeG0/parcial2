@@ -8,6 +8,7 @@ import { Bono } from './entities/bono.entity';
 import { Usuario } from '../usuarios/entities/usuario.entity';
 import { Clase } from '../clases/entities/clase.entity';
 import { faker } from '@faker-js/faker';
+import { CreateBonoDto } from './dto/create-bono.dto';
 
 describe('BonosService', () => {
   let service: BonosService;
@@ -24,7 +25,7 @@ describe('BonosService', () => {
     await claseRepository.clear();
 
     usuario = await usuarioRepository.save({
-      nCedula: faker.number.int(),
+      nCedula: faker.number.int({min : 1, max: 999}),
       nombre: faker.person.fullName(),
       grupoInvestigacion: 'TICSW',
       nExtension: faker.number.int({ min: 10000000, max: 99999999 }),
@@ -68,16 +69,15 @@ describe('BonosService', () => {
   });
 
   it('create should return a new bono', async () => {
-    const bono: Bono = {
-      id: null,
+    const bono: CreateBonoDto = {
       monto: 5000,
       calificacion: 3.5,
       palabraClave: faker.string.alpha(8),
-      usuario,
-      clase,
+      usuarioId : 1,
+      codigoClase : "1234567890",
     };
 
-    const newBono: Bono = await service.create(bono);
+    const newBono: Bono = await service.crearBono(bono);
     expect(newBono).not.toBeNull();
 
     const storedBono: Bono = await bonoRepository.findOne({ where: { id: newBono.id } });

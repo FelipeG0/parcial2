@@ -18,11 +18,34 @@ export class BonosService {
     @InjectRepository(Clase)
     private claseRepository: Repository<Clase>,
 
+    @InjectRepository(Usuario)
+    private usuarioRepository: Repository<Usuario>,
+
   ){}
-  async create(bonoDto: CreateBonoDto) {
-    const bono = this.bonoRepository.create(bonoDto)
-    return await this.bonoRepository.save(bono);
-  
+
+
+  async crearBono(bonoDto: CreateBonoDto): Promise<Bono> {
+    const { monto, usuarioId, codigoClase } = bonoDto;
+
+    if (!monto || monto <= 0) {
+        throw new BusinessLogicException('El monto debe ser un valor positivo', BusinessError.PRECONDITION_FAILED);
+    }
+
+    const usuario = await this.usuarioRepository.findOne({ where: { id: usuarioId } });
+    if (!usuario || usuario.rol !== 'Profesor') {
+        throw new BusinessLogicException('El usuario debe ser un Profesor', BusinessError.PRECONDITION_FAILED);
+    }
+
+    const clase = await this.claseRepository.findOne({ where: { codigo : codigoClase } });
+    if (!clase) {
+        throw new BusinessLogicException ('Clase con ese código no encontrada', BusinessError.NOT_FOUND);
+    }
+
+    const bono = this.bonoRepository.create(bonoDto);
+    bono.usuario = usuario;
+    bono.clase = clase;
+
+    return this.bonoRepository.save(bono);
   }
 
   async findById(id: number): Promise<Bono> {
@@ -33,10 +56,10 @@ export class BonosService {
        return bono;
   }
 
-  async findBonoByCodigoDeLaClase(id: number) {
-    const clase = await this.claseRepository.findOne({where : {id }});
+  async findBonoByCodigoDeLaClase(codigo: string) {
+    const clase = await this.claseRepository.findOne({ where : {codigo} });
     if (!clase) {
-      throw new BusinessLogicException("clase no encontrado.", BusinessError.NOT_FOUND);
+      throw new BusinessLogicException("clase no encontrada.", BusinessError.NOT_FOUND);
     }
 
     return this.bonoRepository.findOne({ where: { clase },});

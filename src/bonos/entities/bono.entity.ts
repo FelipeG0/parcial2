@@ -1,6 +1,6 @@
 import { Clase } from '../../clases/entities/clase.entity';
 import { Usuario } from '../../usuarios/entities/usuario.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Bono {
@@ -18,9 +18,11 @@ export class Bono {
     palabraClave : string
 
     @ManyToOne(() => Usuario, (usuario) => usuario.bonos)
-    usuario : Usuario
+    @JoinColumn({ name: 'usuarioId' })
+    usuario: Usuario;
 
     @ManyToOne(() => Clase, (clase) => clase.bonos)
+    @JoinColumn({ name: 'codigoClase', referencedColumnName: 'codigo'})
     clase : Clase
 
 
