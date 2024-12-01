@@ -25,25 +25,26 @@ describe('BonosService', () => {
     await claseRepository.clear();
 
     usuario = await usuarioRepository.save({
-      nCedula: faker.number.int({min : 1, max: 999}),
-      nombre: faker.person.fullName(),
+      nCedula: faker.datatype.number(),
+      nombre: faker.name.fullName(),
       grupoInvestigacion: 'TICSW',
-      nExtension: faker.number.int({ min: 10000000, max: 99999999 }),
+      nExtension: faker.datatype.number(),
       rol: 'Profesor',
     });
+    
 
     clase = await claseRepository.save({
       nombre: faker.company.name(),
-      codigo: faker.string.alphanumeric(10).toUpperCase(),
-      nCreditos: faker.number.int({ min: 1, max: 5 }),
+      codigo: "1234567890",
+      nCreditos: faker.datatype.number(),
     });
 
     bonosList = [];
     for (let i = 0; i < 5; i++) {
       const bono = await bonoRepository.save({
-        monto: faker.number.int({ min: 1000, max: 10000 }),
-        calificacion: faker.number.float({ min: 1, max: 5 }),
-        palabraClave: faker.string.alpha(8),
+        monto: faker.datatype.number(),
+        calificacion: faker.datatype.number(4),
+        palabraClave: faker.datatype.string(8),
         usuario,
         clase,
       });
@@ -72,7 +73,7 @@ describe('BonosService', () => {
     const bono: CreateBonoDto = {
       monto: 5000,
       calificacion: 3.5,
-      palabraClave: faker.string.alpha(8),
+      palabraClave: faker.datatype.string(10),
       usuarioId : 1,
       codigoClase : "1234567890",
     };
@@ -97,7 +98,7 @@ describe('BonosService', () => {
   it('findBonoByCodigoDeLaClase should throw an exception for an invalid class code', async () => {
     await expect(() => service.findBonoByCodigoDeLaClase('INVALID_CODE')).rejects.toHaveProperty(
       'message',
-      'clase no encontrado.',
+      'clase no encontrada.',
     );
   });
 
@@ -119,7 +120,7 @@ describe('BonosService', () => {
     const bono = await bonoRepository.save({
       monto: 8000,
       calificacion: 4.5,
-      palabraClave: faker.string.alpha(8),
+      palabraClave: faker.datatype.string(8),
       usuario,
       clase,
     });

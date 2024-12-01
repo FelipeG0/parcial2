@@ -5,8 +5,7 @@ import { Bono } from './entities/bono.entity';
 import { Repository } from 'typeorm';
 import { Clase } from '../clases/entities/clase.entity';
 import { BusinessError, BusinessLogicException } from '../shared/errors/business-errors';
-import { Usuario } from 'src/usuarios/entities/usuario.entity';
-
+import {Usuario} from '../usuarios/entities/usuario.entity';
 @Injectable()
 export class BonosService {
 

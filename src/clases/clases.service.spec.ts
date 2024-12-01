@@ -18,8 +18,8 @@ describe('ClasesService', () => {
     for (let i = 0; i < 5; i++) {
       const clase = await repository.save({
         nombre: faker.company.name(),
-        codigo: faker.string.alphanumeric(6).toUpperCase(),
-        nCreditos: faker.number.int({ min: 1, max: 5 }),
+        codigo: faker.datatype.string(10),
+        nCreditos: faker.datatype.number(),
         bonos: [],
         usuario: null,
       });
@@ -62,8 +62,8 @@ describe('ClasesService', () => {
     const clase: Clase = {
       id: null,
       nombre: faker.company.name(),
-      codigo: faker.string.alphanumeric(6).toUpperCase(),
-      nCreditos: faker.number.int({ min: 1, max: 5 }),
+      codigo: faker.datatype.string(10),
+      nCreditos: faker.datatype.number(),
       bonos: [],
       usuario: null,
     };
@@ -83,8 +83,8 @@ describe('ClasesService', () => {
   it('create should throw an error when trying to save a class with missing fields ', async () => {
     const clase: Partial<Clase> = {
       nombre: null, 
-      codigo: faker.string.alphanumeric(6).toUpperCase(),
-      nCreditos: faker.number.int({ min: 1, max: 5 }),
+      codigo: faker.datatype.string(10),
+      nCreditos: faker.datatype.number(),
     };
 
     await expect(service.create(clase as Clase)).rejects.toThrow();

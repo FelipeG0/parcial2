@@ -19,10 +19,10 @@ describe('UsuariosService', () => {
     usuariosList = [];
     for (let i = 0; i < 5; i++) {
       const usuario = await usuarioRepository.save({
-        nCedula: faker.number.int(),
-        nombre: faker.person.fullName(),
+        nCedula: faker.datatype.number(),
+        nombre: faker.name.fullName(),
         grupoInvestigacion: i % 2 === 0 ? 'TICSW' : 'IMAGINE',
-        nExtension: faker.number.int({ min: 10000000, max: 99999999 }),
+        nExtension: faker.datatype.number(),
         rol: i % 2 === 0 ? 'Profesor' : 'Decana',
       });
       usuariosList.push(usuario);
@@ -54,8 +54,8 @@ describe('UsuariosService', () => {
   it('create should return a new usuario with valid data', async () => {
     const usuario: Usuario = {
       id: null,
-      nCedula: faker.number.int(),
-      nombre: faker.person.fullName(),
+      nCedula: faker.datatype.number(),
+      nombre: faker.name.fullName(),
       grupoInvestigacion: 'TICSW',
       nExtension: 12345678,
       rol: 'Profesor',
@@ -77,8 +77,8 @@ describe('UsuariosService', () => {
   it('create should throw an exception for invalid grupoInvestigacion for Profesor', async () => {
     const usuario: Usuario = {
       id: null,
-      nCedula: faker.number.int(),
-      nombre: faker.person.fullName(),
+      nCedula: faker.datatype.number(),
+      nombre: faker.name.fullName(),
       grupoInvestigacion: 'INVALID_GROUP',
       nExtension: 12345678,
       rol: 'Profesor',
@@ -93,8 +93,8 @@ describe('UsuariosService', () => {
   it('create should throw an exception for invalid nExtension for Decana', async () => {
     const usuario: Usuario = {
       id: null,
-      nCedula: faker.number.int(),
-      nombre: faker.person.fullName(),
+      nCedula: faker.datatype.number(),
+      nombre: faker.name.fullName(),
       grupoInvestigacion: null,
       nExtension: 123,
       rol: 'Decana',
