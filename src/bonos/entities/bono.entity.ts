@@ -11,7 +11,7 @@ export class Bono {
     @Column('int')
     monto : number
 
-    @Column('double')
+    @Column('decimal')
     calificacion : number
 
     @Column()

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { Repository } from 'typeorm';
@@ -20,14 +20,15 @@ export class UsuariosService {
   async create(usuario: Usuario) : Promise<Usuario> {
     if (usuario.rol === "Profesor") {
       if (!["TICSW", "IMAGINE", "COMIT"].includes(usuario.grupoInvestigacion)) {
-        throw new Error('Grupo de investigación inválido para profesores');
+        throw new HttpException('Grupo de investigación inválido para profesores',HttpStatus.BAD_REQUEST);
       }
     } else if (usuario.rol === 'Decana') {
       if (!usuario.nExtension || usuario.nExtension.toString().length !== 8) {
-        throw new Error('El numero debe tener 8 digitos');
+        throw new HttpException('El numero debe tener 8 digitos', HttpStatus.BAD_REQUEST);
       }
     }
-    return this.usuarioRepository.save(usuario);
+
+    return await this.usuarioRepository.save(usuario);
   }
 
   async findById(id: number): Promise<Usuario> {
@@ -41,12 +42,12 @@ export class UsuariosService {
   async remove(id: number) {
     const usuario = await this.findById(id);
     if (!usuario) {
-      throw new Error("Usuario no encontrado");
+      throw new BusinessLogicException("Usuario no encontrado", BusinessError.NOT_FOUND);
     }
 
     const bonos = this.bonosService.findAllBonosByUsuario(id)
     if (usuario.rol === "Decana" || (await bonos).length > 0) {
-      throw new Error('No se puede eliminar un usuario Decana o con bonos');
+      throw new HttpException('No se puede eliminar un usuario Decana o con bonos', HttpStatus.BAD_REQUEST);
     }
     return this.usuarioRepository.delete(id);
   }

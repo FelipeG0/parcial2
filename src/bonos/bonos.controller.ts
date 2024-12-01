@@ -1,44 +1,39 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { BonosService } from './bonos.service';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, UseInterceptors } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { BusinessErrorsInterceptor } from '../shared/interceptors/business-errors.interceptor';
 import { CreateBonoDto } from './dto/create-bono.dto';
-import { BusinessError, BusinessLogicException } from 'src/shared/errors/business-errors';
+import { Bono } from './entities/bono.entity';
+import { BonosService } from './bonos.service';
 
 @Controller('bonos')
+@UseInterceptors(BusinessErrorsInterceptor)
 export class BonosController {
-  constructor(private readonly bonosService: BonosService) {}
+    constructor(private readonly bonosService: BonosService) {}
 
   @Post()
-  create(@Body() createBonoDto: CreateBonoDto) {
-    return this.bonosService.create(createBonoDto);
+  async create(@Body() createBonoDto: CreateBonoDto) {
+    const bono: Bono = plainToInstance(Bono, createBonoDto);
+    return await this.bonosService.create(bono);
   }
 
-  @Get('codigo/:codigo')
-  async findBonoByCodigo(@Param('codigo') codigo: string) {
-
-    const bono = await this.bonosService.findBonoByCodigo(codigo);
-    if (!bono) {
-      throw new BusinessLogicException('no se encontro un bono asociado a ese codigo', BusinessError.NOT_FOUND);
-    }
-    return bono;
-
+  @Get('clase/:claseId')
+  async findByClassCode(@Param('claseId') claseId: number) {
+    return await this.bonosService.findBonoByCodigoDeLaClase(claseId);
   }
 
-  @Get('usuario/:usuarioId')
-  async findAllBonosByUsuario(@Param('usuarioId') usuarioId: number) {
-
-    const bonos = await this.bonosService.findAllBonosByUsuario(usuarioId);
-    if (!bonos.length) {
-      throw new BusinessLogicException("el usuario no tiene bonos", BusinessError.NOT_FOUND);
-    }
-    return bonos;
-
+  @Get('usuarios/:usuarioId')
+  async findAllByUser(@Param('usuarioId') userId: number) {
+    return await this.bonosService.findAllBonosByUsuario(userId);
   }
 
-  @Delete(':id')
-  async deleteBono(@Param('id') id: number) {
+  @Get(':bonoId')
+  async findOne(@Param('bonoId') bonoId: number) {
+    return await this.bonosService.findById(bonoId);
+  }
 
-    await this.bonosService.deleteBono(id);
-    return { message: "Bono eliminado" };
-
+  @Delete(':bonoId')
+  @HttpCode(204)
+  async delete(@Param('bonoID') bonusId: number) {
+    return await this.bonosService.deleteBono(bonusId);
   }
 }

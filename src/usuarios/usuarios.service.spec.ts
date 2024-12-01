@@ -140,7 +140,7 @@ describe('UsuariosService', () => {
         id: 1,
         monto: 5000,
         calificacion: 4,
-        palabraClave: 'BONO2024',
+        palabraClave: 'BONO',
         usuario: usuario,
         clase: null,
     }]);

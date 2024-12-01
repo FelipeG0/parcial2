@@ -14,8 +14,10 @@ export class CreateBonoDto {
 
     palabraClave : string
 
+    @IsNotEmpty()
     @IsIn(["Profesor"])
     usuario : Usuario
 
+    @IsNotEmpty()
     clase : Clase
 }

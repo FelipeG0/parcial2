@@ -1,20 +1,23 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
-import { ClasesService } from './clases.service';
+import { Body, Controller, Get, Param, Post, UseInterceptors } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { BusinessErrorsInterceptor } from '../shared/interceptors/business-errors.interceptor';
 import { CreateClaseDto } from './dto/create-clase.dto';
+import { Clase } from './entities/clase.entity';
+import { ClasesService } from './clases.service';
 
 @Controller('clases')
+@UseInterceptors(BusinessErrorsInterceptor)
 export class ClasesController {
-  constructor(private readonly clasesService: ClasesService) {}
+    constructor(private readonly clasesService: ClasesService) {}
+
+  @Get(':claseId')
+  async findOne(@Param('claseId') classId: number) {
+    return await this.clasesService.findById(classId);
+  }
 
   @Post()
-  create(@Body() createClaseDto: CreateClaseDto) {
-    return this.clasesService.create(createClaseDto);
-  }
-
-  @Get(':id')
-  async findById(@Param('id') id: number) {
-    return this.clasesService.findById(id);
+  async create(@Body() createClaseDto: CreateClaseDto) {
+    const clase: Clase = plainToInstance(Clase, createClaseDto);
+    return await this.clasesService.create(clase);
   }
 }
-
-

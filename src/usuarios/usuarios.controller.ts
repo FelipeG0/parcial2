@@ -1,34 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, UseInterceptors } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { BusinessErrorsInterceptor } from 'src/shared/interceptors/business-errors.interceptor';
+import { Usuario } from './entities/usuario.entity';
 import { UsuariosService } from './usuarios.service';
-import { CreateUsuarioDto } from './dto/create-usuario.dto';
-import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 
 @Controller('usuarios')
+@UseInterceptors(BusinessErrorsInterceptor)
 export class UsuariosController {
-  constructor(private readonly usuariosService: UsuariosService) {}
+    constructor(private readonly usuariosService: UsuariosService) {}
+
+  @Get(':usuarioId')
+  async findOne(@Param('usuarioId') userId: number) {
+    return await this.usuariosService.findById(userId);
+  }
 
   @Post()
-  create(@Body() createUsuarioDto: CreateUsuarioDto) {
-    return this.usuariosService.create(createUsuarioDto);
+  async create(@Body() usuarioDto: Usuario) {
+    const usuario: Usuario = plainToInstance(Usuario, usuarioDto);
+    return await this.usuariosService.create(usuario);
   }
 
-  @Get()
-  findAll() {
-    return this.usuariosService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usuariosService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
-    return this.usuariosService.update(+id, updateUsuarioDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usuariosService.remove(+id);
+  @Delete(':usuarioId')
+  @HttpCode(204)
+  async delete(@Param('usuarioId') userId: number) {
+    return await this.usuariosService.remove(userId);
   }
 }
